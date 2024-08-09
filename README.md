@@ -1,0 +1,1 @@
+Just playing around with spring security basic authentication and jwt token.
