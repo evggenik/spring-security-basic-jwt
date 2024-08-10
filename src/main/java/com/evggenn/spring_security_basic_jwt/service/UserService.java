@@ -20,6 +20,9 @@ public class UserService {
     @Autowired
     private AuthenticationManager authManager;
 
+    @Autowired
+    private JwtService jwtService;
+
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public List<User> getAllUsers() {
@@ -35,7 +38,7 @@ public class UserService {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getPassword(), user.getName()));
         if (authentication.isAuthenticated())
-            return "Success login";
+            return jwtService.generateToken(user.getName());
         return "Login failed";
 
     }
