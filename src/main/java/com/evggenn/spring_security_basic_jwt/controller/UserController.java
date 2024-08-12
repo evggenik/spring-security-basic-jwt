@@ -16,6 +16,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
+        System.out.println("Roles of user: " + userService.getAllUsers().get(0));
         return userService.getAllUsers();
     }
 
