@@ -1,9 +1,6 @@
 package com.evggenn.spring_security_basic_jwt.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Objects;

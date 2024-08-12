@@ -12,7 +12,7 @@
 	<artifactId>spring-security-basic-jwt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-security-basic-jwt</name>
-	<description>Spring Boot Security (after telusko&apos;s videos)</description>
+	<description>Spring Boot Security (after telusko videos)</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -65,10 +65,6 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -80,10 +76,7 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
+
 	</dependencies>
 
 	<build>
