@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +12,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -24,7 +23,7 @@ public class JwtService {
 
     public JwtService() {
         try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256"); //HmacSHA256
             SecretKey sk = keyGen.generateKey();
             secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
         } catch (NoSuchAlgorithmException e) {
@@ -32,13 +31,20 @@ public class JwtService {
         }
     }
 
-    public String generateToken(String username) {
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
 
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(Map<String, Object> extraClaims,
+                                UserDetails userDetails) {
+        extraClaims.put("roles", userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
 
         return Jwts.builder()
-                .claims(claims)
-                .subject(username)
+                .claims(extraClaims) // to put roles here
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+15*60*1000))
                 .signWith(getKey())
@@ -69,7 +75,7 @@ public class JwtService {
                 .getPayload();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
@@ -80,5 +86,10 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    // извлечь роли из токена?
+    private Set<String> extractRoles(String token) {
+        return extractClaim(token, Claims::getAudience);
     }
 }

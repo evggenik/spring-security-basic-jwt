@@ -1,5 +1,6 @@
 package com.evggenn.spring_security_basic_jwt.service;
 
+
 import com.evggenn.spring_security_basic_jwt.model.Role;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.repository.RoleRepo;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class UserService {
 
     @Autowired
     private JwtService jwtService;
+
 
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -57,8 +60,10 @@ public class UserService {
     public String verify(User user) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getPassword(), user.getName()));
-        if (authentication.isAuthenticated())
-            return jwtService.generateToken(user.getName());
+        if (authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return jwtService.generateToken(userDetails);
+        }
         return "Login failed";
 
     }
