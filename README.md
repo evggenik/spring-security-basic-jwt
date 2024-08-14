@@ -3,3 +3,5 @@ Just playing around with spring security basic authentication and jwt token. (au
 TODO -> add dto's
 
 TODO -> realize refresh token
+
+TODO -> asymmetric encryption for jwt
