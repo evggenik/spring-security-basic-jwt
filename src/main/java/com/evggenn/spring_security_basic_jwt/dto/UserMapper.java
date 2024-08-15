@@ -2,13 +2,21 @@ package com.evggenn.spring_security_basic_jwt.dto;
 
 import com.evggenn.spring_security_basic_jwt.model.Role;
 import com.evggenn.spring_security_basic_jwt.model.User;
+import com.evggenn.spring_security_basic_jwt.repository.RoleRepo;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
+
+    private final RoleRepo roleRepo;
+
+    public UserMapper(RoleRepo roleRepo) {
+        this.roleRepo = roleRepo;
+    }
 
     public UserResponse toUserResponse(User user) {
         return new UserResponse(
@@ -32,13 +40,16 @@ public class UserMapper {
     }
 
     private Set<Role> mapStringsToRoles(Set<String> roleNames) {
-        return roleNames.stream()
-                .map((name->{
-                    Role role = new Role(); //лучше использовать билдер?
-                    role.setName(name);
-                    return role;}
-                ))
-                .collect(Collectors.toSet());
+        Set<Role> roles = new HashSet<>();
+        for (String name : roleNames) {
+            Role role = roleRepo.findByName(name);
+            if (role != null) {
+                roles.add(role);
+            } else {
+                throw new IllegalArgumentException("Role " + name + " does not exist");
+            }
+        }
+        return roles;
     }
 
 }

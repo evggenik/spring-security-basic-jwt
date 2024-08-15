@@ -1,9 +1,12 @@
 package com.evggenn.spring_security_basic_jwt.controller;
 
 import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
+import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +35,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRequest userRequest) {
+        UserResponse userResponse = userService.register(userRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
     @PostMapping("/login")
