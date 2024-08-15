@@ -1,23 +1,34 @@
 package com.evggenn.spring_security_basic_jwt.controller;
 
+import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
+import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    public UserController(UserService userService, UserMapper userMapper) {
+        this.userService = userService;
+        this.userMapper = userMapper;
+    }
 
     @GetMapping
-    public List<User> getUsers() {
-        System.out.println("Roles of user: " + userService.getAllUsers().get(0));
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getUsers() {
+        List<User> users = userService.getAllUsers();
+        List<UserResponse> userResponses = users.stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userResponses);
     }
 
     @PostMapping("/register")
