@@ -1,7 +1,9 @@
 Just playing around with spring security basic authentication and jwt token. (auth via postgres)
 
-TODO -> add dto's
+TODO -> exceptions
 
-TODO -> realize refresh token
+TODO -> tests
+
+TODO -> implement refresh token
 
 TODO -> asymmetric encryption for jwt
