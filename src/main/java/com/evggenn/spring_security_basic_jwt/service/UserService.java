@@ -5,9 +5,7 @@ import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
 import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
 import com.evggenn.spring_security_basic_jwt.model.User;
-import com.evggenn.spring_security_basic_jwt.repository.RoleRepo;
 import com.evggenn.spring_security_basic_jwt.repository.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,24 +20,19 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
-    private RoleRepo roleRepo;
-
-    @Autowired
-    private AuthenticationManager authManager;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserMapper userMapper;
-
-
+    private final UserRepo userRepo;
+    private final AuthenticationManager authManager;
+    private final JwtService jwtService;
+    private final UserMapper userMapper;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public UserService(UserRepo userRepo, AuthenticationManager authManager, JwtService jwtService, UserMapper userMapper) {
+        this.userRepo = userRepo;
+        this.authManager = authManager;
+        this.jwtService = jwtService;
+        this.userMapper = userMapper;
+    }
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
