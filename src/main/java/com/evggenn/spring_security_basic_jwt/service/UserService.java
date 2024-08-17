@@ -4,8 +4,10 @@ package com.evggenn.spring_security_basic_jwt.service;
 import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
 import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
+import com.evggenn.spring_security_basic_jwt.exceptions.UserAlreadyExistsException;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.repository.UserRepo;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,10 +41,15 @@ public class UserService {
     }
 
     public UserResponse register(UserRequest userRequest) {
-        User user = userMapper.toUser(userRequest);
-        user.setPassword(encoder.encode(user.getPassword()));
-        User savedUser = userRepo.save(user);
-        return userMapper.toUserResponse(savedUser);
+        try {
+            User user = userMapper.toUser(userRequest);
+            user.setPassword(encoder.encode(user.getPassword()));
+            User savedUser = userRepo.save(user);
+            return userMapper.toUserResponse(savedUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistsException("User with this username already exists.");
+        }
+
     }
 
     public String verify(User user) {

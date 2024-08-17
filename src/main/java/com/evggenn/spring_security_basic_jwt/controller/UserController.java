@@ -41,9 +41,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        System.out.println(user);
-        return userService.verify(user);
+    public ResponseEntity<String> login(@RequestBody User user) {
+        String token = userService.verify(user);;
+        return ResponseEntity.ok(token);
     }
 
 
