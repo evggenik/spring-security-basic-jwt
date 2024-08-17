@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
-public record UserRequest(int id,
+public record UserRequest(
           @NotBlank(message = "Username cannot be empty")
           @Size(min = 3, message = "Username must be at least 3 characters long")
           String name,

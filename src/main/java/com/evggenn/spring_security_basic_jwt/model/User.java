@@ -12,7 +12,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private Integer id;
     @Column(unique = true)
     private String name;
     private String password;
@@ -29,7 +29,7 @@ public class User {
     public User() {
     }
 
-    public User(int id, String name, String password, Set<Role> roles) {
+    public User(Integer id, String name, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;
         this.password = password;

@@ -27,13 +27,14 @@ public class UserService {
     private final JwtService jwtService;
     private final UserMapper userMapper;
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder;
 
-    public UserService(UserRepo userRepo, AuthenticationManager authManager, JwtService jwtService, UserMapper userMapper) {
+    public UserService(UserRepo userRepo, AuthenticationManager authManager, JwtService jwtService, UserMapper userMapper, BCryptPasswordEncoder encoder) {
         this.userRepo = userRepo;
         this.authManager = authManager;
         this.jwtService = jwtService;
         this.userMapper = userMapper;
+        this.encoder = encoder;
     }
 
     public List<User> getAllUsers() {

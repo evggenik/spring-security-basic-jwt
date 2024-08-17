@@ -12,7 +12,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String name;
 
     @ManyToMany(mappedBy = "roles")
@@ -23,7 +23,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(int id, String name) {
+    public Role(Integer id, String name) {
         this.id = id;
         this.name = name;
 
