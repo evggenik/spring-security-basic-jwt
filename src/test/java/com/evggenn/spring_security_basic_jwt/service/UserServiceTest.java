@@ -3,6 +3,7 @@ package com.evggenn.spring_security_basic_jwt.service;
 import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
 import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
+import com.evggenn.spring_security_basic_jwt.exceptions.UserAlreadyExistsException;
 import com.evggenn.spring_security_basic_jwt.model.Role;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.repository.UserRepo;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -70,7 +73,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetAllUsers_EmptyList() {
+    void testGetAllUsersEmptyList() {
         // Arrange
         when(userRepo.findAll()).thenReturn(Collections.emptyList());
 
@@ -111,6 +114,22 @@ class UserServiceTest {
         assertEquals(savedUser.getName(), response.name());
         assertEquals(savedUser.getId(), response.id());
         assertEquals(responseRoles, response.roles());
+    }
+
+    @Test
+    public void testRegisterUserAlreadyExistsException() {
+        // Arrange
+        UserRequest userRequest = Mockito.mock(UserRequest.class);
+
+        User user = new User();
+
+        when(userMapper.toUser(userRequest)).thenReturn(user);
+
+        // Act
+        when(userRepo.save(user)).thenThrow(DataIntegrityViolationException.class);
+
+        // Assert
+        assertThrows(UserAlreadyExistsException.class, () -> userService.register(userRequest));
     }
 
 
