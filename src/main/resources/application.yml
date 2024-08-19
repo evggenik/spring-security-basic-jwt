@@ -2,6 +2,8 @@ spring:
   application:
     name: spring-security-basic-jwt
 
+
+
   datasource:
     url: jdbc:postgresql://localhost:5432/telusko-sec
     password: postgres
