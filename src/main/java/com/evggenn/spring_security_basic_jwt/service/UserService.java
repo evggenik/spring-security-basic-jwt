@@ -4,6 +4,7 @@ package com.evggenn.spring_security_basic_jwt.service;
 import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
 import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
+import com.evggenn.spring_security_basic_jwt.exceptions.AuthenticationFailedException;
 import com.evggenn.spring_security_basic_jwt.exceptions.UserAlreadyExistsException;
 import com.evggenn.spring_security_basic_jwt.model.User;
 import com.evggenn.spring_security_basic_jwt.repository.UserRepo;
@@ -60,7 +61,7 @@ public class UserService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return jwtService.generateToken(userDetails);
         }
-        return "Login failed";
+        throw new AuthenticationFailedException("Login failed");
 
     }
 

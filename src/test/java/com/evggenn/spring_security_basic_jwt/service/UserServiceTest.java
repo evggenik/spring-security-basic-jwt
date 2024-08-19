@@ -3,6 +3,7 @@ package com.evggenn.spring_security_basic_jwt.service;
 import com.evggenn.spring_security_basic_jwt.dto.UserMapper;
 import com.evggenn.spring_security_basic_jwt.dto.UserRequest;
 import com.evggenn.spring_security_basic_jwt.dto.UserResponse;
+import com.evggenn.spring_security_basic_jwt.exceptions.AuthenticationFailedException;
 import com.evggenn.spring_security_basic_jwt.exceptions.UserAlreadyExistsException;
 import com.evggenn.spring_security_basic_jwt.model.Role;
 import com.evggenn.spring_security_basic_jwt.model.User;
@@ -15,16 +16,25 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
+    @Mock
+    private UserDetails userDetails;
+
+    @Mock
+    private Authentication authentication;
 
     @Mock
     private BCryptPasswordEncoder encoder;
@@ -130,6 +140,46 @@ class UserServiceTest {
 
         // Assert
         assertThrows(UserAlreadyExistsException.class, () -> userService.register(userRequest));
+    }
+
+    @Test
+    public void testVerifyIsAuthenticated() {
+
+        // Arrange
+        User user = new User(null, "wasya", "wasya", new HashSet<>(Collections.emptyList()));
+
+        when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(jwtService.generateToken(userDetails)).thenReturn("mocked-token");
+
+        // Act
+        String token = userService.verify(user);
+
+        // Assert
+        assertEquals("mocked-token", token);
+        verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService).generateToken(userDetails);
+
+    }
+
+    @Test
+    public void testVerifyAuthenticationFailed() {
+
+        // Arrange
+        User user = new User(null, "wasya", "wasya", new HashSet<>(Collections.emptyList()));
+        when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(AuthenticationFailedException.class, ()->userService.verify(user));
+
+        verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService, never()).generateToken(any(UserDetails.class));
+
     }
 
 
